@@ -5,6 +5,8 @@ import org.testng.annotations.Test;
 
 import com.reqres.base.BaseTest;
 
+import io.restassured.response.ValidatableResponse;
+
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
@@ -12,14 +14,13 @@ public class UserTest extends BaseTest{
 
     // @BeforeClass
     // public void setup() {
-        // Base URL'i bir kez set ediyoruz
         // RestAssured.baseURI = "https://jsonplaceholder.typicode.com";
         // RestAssured.basePath = "";
     // }
 
-    @Test(groups = {"demo1"})
+    @Test
     public void getUserList_shouldReturn200() {
-    given()
+    given(requestSpec)
     .when()
         .get("/users")
     .then()
@@ -28,16 +29,43 @@ public class UserTest extends BaseTest{
         .body("[0].id", notNullValue());
 }
 
-    @Test(groups = {"demo2"})
+    @Test
     public void getSingleUser_shouldReturn200() {
-    given()
+    given(requestSpec)
     .when()
         .get("/users/2")
     .then()
         .statusCode(200)
         .body("id", equalTo(2))
+        .body("name", equalTo("Ervin Howell"))
         .body("email", notNullValue());
 }
+
+    @Test
+    public void createUser_withRawJson() {
+    
+    String body = """
+            {
+            "name": "Onur",
+            "username": "onury",
+            "email": "onur@example.com"
+            }
+            """;
+
+            ValidatableResponse res =
+                given(requestSpec)
+                    .body(body)
+                .when()
+                    .post("/users")
+                .then()
+                    .statusCode(anyOf(is(201), is(200)))
+                    .contentType(containsString("application/json"))
+                    .body("name", equalTo("Onur"))
+                    .body("username", equalTo("onury"))
+                    .body("email", equalTo("onur@example.com"))
+                    .body("id", notNullValue());
+        }
+
 
 
     // @Test
