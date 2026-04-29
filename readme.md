@@ -1,2 +1,8 @@
-1 - mvn clean compile test
-2 - allure serve target/allure-results
+Running the tests:
+```bash
+mvn clean compile test
+```
+Opening Allure HTML Report:
+```bash
+allure serve target/allure-results
+```
